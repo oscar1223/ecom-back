@@ -1,39 +1,84 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Product, Prisma } from '@prisma/client';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { Product } from '@prisma/client';
 
 @Injectable()
 export class ProductService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  // 1. Create a new product
-  async create(data: Prisma.ProductCreateInput): Promise<Product> {
-    return this.prisma.product.create({ data });
-  }
-
-  // 2. Find all products
-  async findAll(): Promise<Product[]> {
-    return this.prisma.product.findMany({
-      include: { user: true, category: true }, // si deseas incluir relaciones
+  // 1. Create product
+  async create(createProductDto: CreateProductDto): Promise<Product> {
+    const { name, description, price, userId, categoryId } = createProductDto;
+    
+    return this.prisma.product.create({
+      data: {
+        name,
+        description,
+        price,
+        user: {
+          connect: { id: userId },
+        },
+        // Conect with category if categoryId exists
+        ...(categoryId && {
+          category: {
+            connect: { id: categoryId },
+          },
+        }),
+      },
     });
   }
-  // 3. Find one product by id
-  async findOne(id: number): Promise<Product | null> {
-    return this.prisma.product.findUnique({
-      where: { id },
+
+  // Return all products
+  async findAll(): Promise<Product[]> {
+    return this.prisma.product.findMany({
       include: { user: true, category: true },
     });
   }
 
-  // 4. Update product
-  async update(id: number, data: Prisma.ProductUpdateInput): Promise<Product> {
+  // Filter product for id
+  async findOne(id: number): Promise<Product> {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+      include: { user: true, category: true },
+    });
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+    return product;
+  }
+
+  // Update product
+  async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
+    const { categoryId, userId, ...rest } = updateProductDto;
+
+    // Craft the data object dynamically
+    const data: any = { ...rest };
+
+    if (typeof userId === 'number') {
+      data.user = {
+        connect: { id: userId },
+      };
+    }
+    if (typeof categoryId === 'number') {
+      data.category = {
+        connect: { id: categoryId },
+      };
+    } else if (categoryId === null) {
+      // If categoryId is null, disconnect the category
+      data.category = {
+        disconnect: true,
+      };
+    }
+
     return this.prisma.product.update({
       where: { id },
       data,
     });
   }
 
-  // 5. Remove
+  // Remove
   async remove(id: number): Promise<Product> {
     return this.prisma.product.delete({
       where: { id },
