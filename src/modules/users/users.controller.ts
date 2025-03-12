@@ -6,13 +6,13 @@ import {
     Param,
     ParseIntPipe,
     UseGuards,
-  } from '@nestjs/common';
-  import { UsersService } from './users.service';
-  import { CreateUserDto } from './dto/create-user.dto';
-  import { UpdateUserDto } from './dto/update-user.dto';
-  import { UpdatePasswordDto } from './dto/update-password.dto';
-  import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-  import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 
 @ApiTags('Users')
@@ -74,5 +74,5 @@ export class UsersController {
   activate(@Param('id', ParseIntPipe) id: number) {
       return this.usersService.activateUser(id);
   }
-  
+
 }

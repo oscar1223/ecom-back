@@ -19,5 +19,100 @@ model User {
   password String
   name   String?
   active    Boolean  @default(true)
-  // Otros campos que quieras
+  
+  // Product related
+  products Product[]
+  // Order related
+  orders Order[]
+  // Addresses related
+  addresses Address[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  name String
+  description String?
+
+  products    Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Address {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  
+  street     String
+  city       String
+  state      String?
+  zipCode    String?
+  country    String
+
+  orders     Order[]
+  
+  // Indentify if its orimary or secondary
+  isPrimary  Boolean  @default(false)
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+}
+
+model Product {
+  id  Int   @id @default(autoincrement())
+  name String
+  description String?
+  price Decimal @db.Decimal(10, 2)
+  
+  // User creator of the product
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+
+  orderItems  OrderItem[]
+
+  categoryId Int?
+  category Category? @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  // User who order
+  userId     Int
+  user       User        @relation(fields: [userId], references: [id])
+  
+  // Save the Address
+  addressId  Int?
+  address    Address?    @relation(fields: [addressId], references: [id])
+  
+  status     String      @default("PENDING") // PENDING, PAID, SHIPPED, CANCELLED
+  total      Decimal     @db.Decimal(10, 2)
+  
+  // Relationing with the order list items
+  orderItems OrderItem[]
+  
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now()) @updatedAt
+}
+
+model OrderItem {
+  id        Int       @id @default(autoincrement())
+  orderId   Int
+  order     Order     @relation(fields: [orderId], references: [id])
+  
+  productId Int
+  product   Product   @relation(fields: [productId], references: [id])
+  
+  quantity  Int       @default(1)
+  // unit price in the moment of the order
+  price     Decimal   @db.Decimal(10, 2)
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
 }
