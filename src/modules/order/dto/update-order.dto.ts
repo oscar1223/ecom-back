@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 export class UpdateOrderItemDto {
   @IsInt()
   @IsOptional()
-  productId?: number;
+  productId: number;
 
   @IsInt()
   @IsOptional()
