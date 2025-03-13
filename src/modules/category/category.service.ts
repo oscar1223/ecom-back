@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -14,12 +18,17 @@ export class CategoryService {
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
     const { name, description } = createCategoryDto;
 
-    return this.prisma.category.create({
-      data: {
-        name,
-        description,
-      },
-    });
+    try {
+      return await this.prisma.category.create({
+        data: {
+          name,
+          description,
+        },
+      });
+    } catch (error) {
+      // Aquí podrías revisar error.code si es Prisma (ej.: P2002 unique constraint)
+      throw new InternalServerErrorException('Error creating category');
+    }
   }
 
   /**
@@ -27,61 +36,94 @@ export class CategoryService {
    * con posibilidad de incluir los productos (si lo deseas)
    */
   async findAll(): Promise<Category[]> {
-    return this.prisma.category.findMany({
-      include: { products: true }, // si quieres cargar los productos asociados
-    });
+    try {
+      return await this.prisma.category.findMany({
+        include: { products: true }, // si quieres cargar los productos asociados
+      });
+    } catch (error) {
+      throw new InternalServerErrorException('Error retrieving categories');
+    }
   }
 
   /**
-   * Retorna una sola categoría por ID,
+   * Retorna una sola categoría por ID
    * o lanza NotFoundException si no existe
    */
   async findOne(id: number): Promise<Category> {
-    const category = await this.prisma.category.findUnique({
-      where: { id },
-      include: { products: true },
-    });
+    try {
+      const category = await this.prisma.category.findUnique({
+        where: { id },
+        include: { products: true },
+      });
 
-    if (!category) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
+      if (!category) {
+        throw new NotFoundException(`Category with ID ${id} not found`);
+      }
+
+      return category;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        // re-lanzamos la excepción
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Error finding category with ID ${id}`,
+      );
     }
-    return category;
   }
 
   /**
    * Actualiza una categoría por ID
    */
-  async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
-    const { name, description } = updateCategoryDto;
+  async update(
+    id: number,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category> {
+    try {
+      const existing = await this.prisma.category.findUnique({ where: { id } });
+      if (!existing) {
+        throw new NotFoundException(`Category with ID ${id} not found`);
+      }
 
-    // Verificamos que exista
-    const existing = await this.prisma.category.findUnique({ where: { id } });
-    if (!existing) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
+      const { name, description } = updateCategoryDto;
+      return await this.prisma.category.update({
+        where: { id },
+        data: {
+          name,
+          description,
+        },
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Error updating category with ID ${id}`,
+      );
     }
-
-    return this.prisma.category.update({
-      where: { id },
-      data: {
-        name,
-        description,
-      },
-    });
   }
 
   /**
    * Elimina una categoría por ID
    */
   async remove(id: number): Promise<Category> {
-    // Verificamos que exista
-    const existing = await this.prisma.category.findUnique({ where: { id } });
-    if (!existing) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
-    }
+    try {
+      const existing = await this.prisma.category.findUnique({ where: { id } });
+      if (!existing) {
+        throw new NotFoundException(`Category with ID ${id} not found`);
+      }
 
-    // Eliminamos
-    return this.prisma.category.delete({
-      where: { id },
-    });
+      // Eliminamos
+      return await this.prisma.category.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Error deleting category with ID ${id}`,
+      );
+    }
   }
 }

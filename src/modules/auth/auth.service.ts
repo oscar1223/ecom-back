@@ -1,42 +1,51 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private usersService: UsersService,
-        private jwtService: JwtService
-    ){}
-    /**
-     * User verify authentication with email and password
-     * @param email 
-     * @param password 
-     * @returns 
-     */
-    async login(email: string, password: string): Promise<{token: string}> {
-        // Validate both fields
-        if (!email || !password) {
-            throw new UnauthorizedException('Credenciales inválidas');
-        }
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService
+  ) {}
 
-        // Find user by email
-        const user = await this.usersService.findByEmail(email);
-        if (!user) {
-            throw new UnauthorizedException('Credenciales inválidas');
-        }
+  /**
+   * Autentica a un usuario validando email y password.
+   * Devuelve un token JWT si es correcto.
+   */
+  async login(email: string, password: string): Promise<{ token: string }> {
+    try {
+      // Verificar que se proporcionen ambos campos
+      if (!email || !password) {
+        throw new UnauthorizedException('Credenciales inválidas');
+      }
 
-        // Validate password
-        const passwordValid = await bcrypt.compare(password, user.password);
-        if (!passwordValid) {
-            throw new UnauthorizedException('Credenciales inválidas');
-        }
+      // Buscar el usuario por email
+      const user = await this.usersService.findByEmail(email);
+      if (!user) {
+        throw new UnauthorizedException('Credenciales inválidas');
+      }
 
-        // Generate token
-        const payload = { sub: user.id, email: user.email };
-        const token = await this.jwtService.signAsync(payload);
+      // Comparar la contraseña con el hash
+      const passwordValid = await bcrypt.compare(password, user.password);
+      if (!passwordValid) {
+        throw new UnauthorizedException('Credenciales inválidas');
+      }
 
-        return { token };   
+      // Generar token JWT
+      const payload = { sub: user.id, email: user.email };
+      const token = await this.jwtService.signAsync(payload);
+
+      return { token };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        // Re-lanzamos la excepción ya identificada como Unauthorized
+        throw error;
+      }
+      // Para otros errores no esperados (p.ej. error de DB),
+      // generamos un InternalServerErrorException
+      throw new InternalServerErrorException('Error during login process');
     }
+  }
 }

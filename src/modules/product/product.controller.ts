@@ -22,7 +22,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   // Create product
-  @Post('create-product')
+  @Post('create')
   @ApiOperation({ summary: 'Create a new product' })
   @ApiResponse({ status: 201, description: 'Product created successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
@@ -32,7 +32,8 @@ export class ProductController {
 
   // Get all products
   @UseGuards(JwtAuthGuard)
-  @Get('get-all')
+  @Get('list')
+  @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({ status: 201, description: 'Products listed successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   findAll(): Promise<Product[]> {
@@ -40,7 +41,9 @@ export class ProductController {
   }
 
   // Get one product
-  @Get('product/:id')
+  @UseGuards(JwtAuthGuard)
+  @Get('get/:id')
+  @ApiOperation({ summary: 'Get one product by id' })
   @ApiResponse({ status: 201, description: 'Product listed successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   findOne(@Param('id', ParseIntPipe) id: number): Promise<Product> {
@@ -48,7 +51,9 @@ export class ProductController {
   }
 
   // Update product
-  @Patch('update-product/:id')
+  @UseGuards(JwtAuthGuard)
+  @Patch('update/:id')
+  @ApiOperation({ summary: 'Update product by id' })
   @ApiResponse({ status: 201, description: 'Product updated successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   update(
@@ -59,7 +64,9 @@ export class ProductController {
   }
 
   // Remove product
+  @UseGuards(JwtAuthGuard)
   @Delete('remove/:id')
+  @ApiOperation({ summary: 'Remove product' })
   @ApiResponse({ status: 201, description: 'Product deleted successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   remove(@Param('id', ParseIntPipe) id: number): Promise<Product> {
