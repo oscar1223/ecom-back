@@ -2,98 +2,247 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# E-Commerce API with NestJS and Prisma
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project is a RESTful API for an e-commerce application built with NestJS, Prisma ORM, and PostgreSQL. It includes authentication, user management, product catalog, orders, and addressing functionality.
 
-## Project setup
+## Features
+
+- **Authentication**: JWT-based authentication system
+- **User Management**: Register, update, activate/deactivate users
+- **Product Catalog**: CRUD operations for products with category management
+- **Order Processing**: Create and manage orders with order items
+- **Address Management**: User address storage and management
+
+## Tech Stack
+
+- [NestJS](https://nestjs.com/) - Progressive Node.js framework
+- [Prisma](https://www.prisma.io/) - Next-generation ORM
+- [PostgreSQL](https://www.postgresql.org/) - Relational database
+- [JWT](https://jwt.io/) - JSON Web Tokens for authentication
+- [Jest](https://jestjs.io/) - Testing framework
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- PostgreSQL database
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd <project-folder>
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up your database:
+   - Create a PostgreSQL database
+   - Update the 
+
+.env
+
+ file with your database connection string
+   ```
+   DATABASE_URL="postgresql://username:password@localhost:5432/your-db-name?schema=public"
+   ```
+
+4. Run database migrations:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+5. Start the development server:
+   ```bash
+   npm run start:dev
+   ```
+
+The API will be available at `http://localhost:3000`.
+
+## API Documentation
+
+API documentation is available via Swagger UI at `/docs` endpoint when the server is running.
+
+## Testing
+
+This project includes both unit tests and end-to-end tests.
 
 ```bash
-$ npm install
+# Run unit tests
+npm run test
+
+# Run end-to-end tests
+npm run test:e2e
+
+# Check test coverage
+npm run test:cov
 ```
 
-## Compile and run the project
+## Project Structure
 
-```bash
-# development
-$ npm run start
+- 
 
-# watch mode
-$ npm run start:dev
+src
 
-# production mode
-$ npm run start:prod
-```
+ - Main source code
+  - 
 
-## Run tests
+modules
 
-```bash
-# unit tests
-$ npm run test
+ - Feature modules (users, products, orders, etc.)
+  - 
 
-# e2e tests
-$ npm run test:e2e
+prisma
 
-# test coverage
-$ npm run test:cov
-```
+ - Prisma ORM configuration and service
+- 
 
-## Deployment
+test
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+ - End-to-end tests
+- 
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+prisma
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+ - Prisma schema and migrations
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Main Modules
 
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- **Users**: User registration, profile management
+- **Authentication**: Login, JWT handling
+- **Products**: Product CRUD operations 
+- **Categories**: Product categorization
+- **Orders**: Order creation and management
+- **Addresses**: User address management
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is MIT licensed.
+
+oscar1223: tiene que ser un formato que pueda copiar y egar en el README.md
+
+Workspace: Collecting workspace information
+
+# E-Commerce API with NestJS and Prisma
+
+This project is a RESTful API for an e-commerce application built with NestJS, Prisma ORM, and PostgreSQL. It includes authentication, user management, product catalog, orders, and addressing functionality.
+
+## Features
+
+- **Authentication**: JWT-based authentication system
+- **User Management**: Register, update, activate/deactivate users
+- **Product Catalog**: CRUD operations for products with category management
+- **Order Processing**: Create and manage orders with order items
+- **Address Management**: User address storage and management
+
+## Tech Stack
+
+- [NestJS](https://nestjs.com/) - Progressive Node.js framework
+- [Prisma](https://www.prisma.io/) - Next-generation ORM
+- [PostgreSQL](https://www.postgresql.org/) - Relational database
+- [JWT](https://jwt.io/) - JSON Web Tokens for authentication
+- [Jest](https://jestjs.io/) - Testing framework
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- PostgreSQL database
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd <project-folder>
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up your database:
+   - Create a PostgreSQL database
+   - Update the 
+
+.env
+
+ file with your database connection string
+   ```
+   DATABASE_URL="postgresql://username:password@localhost:5432/your-db-name?schema=public"
+   ```
+
+4. Run database migrations:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+5. Start the development server:
+   ```bash
+   npm run start:dev
+   ```
+
+The API will be available at `http://localhost:3000`.
+
+## API Documentation
+
+API documentation is available via Swagger UI at `/docs` endpoint when the server is running.
+
+## Testing
+
+This project includes both unit tests and end-to-end tests.
+
+```bash
+# Run unit tests
+npm run test
+
+# Run end-to-end tests
+npm run test:e2e
+
+# Check test coverage
+npm run test:cov
+```
+
+## Project Structure
+
+- 
+
+src
+
+ - Main source code
+  - 
+
+modules
+
+ - Feature modules (users, products, orders, etc.)
+  - 
+
+prisma
+
+ - Prisma ORM configuration and service
+- 
+
+test
+
+ - End-to-end tests
+- 
+
+prisma
+
+ - Prisma schema and migrations
+
+## License
+
+This project is MIT licensed.

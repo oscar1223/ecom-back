@@ -6,6 +6,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { AddressModule } from './modules/address/address.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductModule } from './modules/product/product.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 
 @Module({
@@ -17,6 +18,7 @@ import { ProductModule } from './modules/product/product.module';
     AddressModule,
     OrderModule,
     AuthModule,
+    PaymentModule,
   ],
   controllers: [],
   providers: [],
