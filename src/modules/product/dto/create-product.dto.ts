@@ -23,4 +23,10 @@ export class CreateProductDto {
   @IsInt()
   @IsOptional()
   categoryId?: number;
+
+  // Campo nuevo para la foto
+  @ApiProperty({ example: 'base64 de la foto del producto', description: 'Foto del producto' })
+  @IsString()
+  @IsOptional()
+  photo?: string; // Ej. URL a la imagen
 }

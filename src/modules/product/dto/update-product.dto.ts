@@ -26,4 +26,10 @@ export class UpdateProductDto {
   @IsInt()
   @IsOptional()
   categoryId?: number;
+
+  // Campo foto opcional para actualizar
+  @ApiProperty({ example: 'base64 de la foto del producto', description: 'Foto del producto' })
+  @IsString()
+  @IsOptional()
+  photo?: string;
 }

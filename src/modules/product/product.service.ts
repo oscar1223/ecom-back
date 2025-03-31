@@ -14,7 +14,7 @@ export class ProductService {
 
   // 1. Create product
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    const { name, description, price, userId, categoryId } = createProductDto;
+    const { name, description, price, userId, categoryId, photo } = createProductDto;
 
     try {
       return await this.prisma.product.create({
@@ -22,6 +22,7 @@ export class ProductService {
           name,
           description,
           price,
+          photo,
           user: {
             connect: { id: userId },
           },
@@ -74,7 +75,7 @@ export class ProductService {
   async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
     try {
       // Desestructuramos los campos
-      const { categoryId, userId, ...rest } = updateProductDto;
+      const { categoryId, userId, photo, ...rest } = updateProductDto;
 
       // Construimos el objeto de datos dinámicamente
       const data: any = { ...rest };
@@ -88,11 +89,20 @@ export class ProductService {
         data.category = {
           connect: { id: categoryId },
         };
+
       } else if (categoryId === null) {
         // Si categoryId es null, desconecta la categoría
         data.category = {
           disconnect: true,
         };
+      }
+
+      // Incluir photo si viene en update
+      if (typeof photo === 'string') {
+        data.photo = photo;
+      } else if (photo === null) {
+        // si deseas poder "borrar" la foto
+        data.photo = null;
       }
 
       // Verificamos la existencia primero (opcional)
@@ -105,6 +115,7 @@ export class ProductService {
         where: { id },
         data,
       });
+      
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
