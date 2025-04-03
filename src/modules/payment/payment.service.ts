@@ -8,9 +8,7 @@ export class PaymentService {
   private stripe: Stripe;
 
   constructor(private prisma: PrismaService) {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: '2022-11-15',
-    });
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {});
   }
 
   /**
@@ -28,7 +26,7 @@ export class PaymentService {
 
     // order.total es Decimal, la pasamos a centavos si usas USD, etc.
     // Suponiendo order.total se guarda como string
-    const amount = parseFloat(order.total) * 100; // => 120.5 => 12050 centavos
+    const amount = parseFloat(order.total.toString()) * 100; // => 120.5 => 12050 centavos
 
     // 2) Llamar a Stripe para crear PaymentIntent
     const paymentIntent = await this.stripe.paymentIntents.create({
