@@ -1,3 +1,4 @@
+// auth.service.ts (con return { token, user })
 import { Injectable, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -12,39 +13,46 @@ export class AuthService {
 
   /**
    * Autentica a un usuario validando email y password.
-   * Devuelve un token JWT si es correcto.
+   * Devuelve token JWT y la info básica del usuario si es correcto.
    */
-  async login(email: string, password: string): Promise<{ token: string }> {
+  async login(email: string, password: string): Promise<{ token: string; user: any }> {
     try {
-      // Verificar que se proporcionen ambos campos
       if (!email || !password) {
         throw new UnauthorizedException('Credenciales inválidas');
       }
 
-      // Buscar el usuario por email
+      // 1. Buscar el usuario
       const user = await this.usersService.findByEmail(email);
       if (!user) {
         throw new UnauthorizedException('Credenciales inválidas');
       }
 
-      // Comparar la contraseña con el hash
+      // 2. Validar contraseña
       const passwordValid = await bcrypt.compare(password, user.password);
       if (!passwordValid) {
         throw new UnauthorizedException('Credenciales inválidas');
       }
 
-      // Generar token JWT
+      // 3. Generar token
       const payload = { sub: user.id, email: user.email };
       const token = await this.jwtService.signAsync(payload);
 
-      return { token };
+      // 4. Retornamos token y user
+      return {
+        token,
+        user: {
+          // Incluimos los campos que quieras exponer en el frontend
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          createdAt: user.createdAt, // si lo tienes en tu modelo
+          // etc.
+        }
+      };
     } catch (error) {
       if (error instanceof UnauthorizedException) {
-        // Re-lanzamos la excepción ya identificada como Unauthorized
         throw error;
       }
-      // Para otros errores no esperados (p.ej. error de DB),
-      // generamos un InternalServerErrorException
       throw new InternalServerErrorException('Error during login process');
     }
   }

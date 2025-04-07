@@ -1,11 +1,12 @@
 import {
-    Controller,
-    Post,
-    Patch,
-    Body,
-    Param,
-    ParseIntPipe,
-    UseGuards,
+  Controller,
+  Post,
+  Patch,
+  Body,
+  Param,
+  ParseIntPipe,
+  UseGuards,
+  Get,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -13,7 +14,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-
 
 @ApiTags('Users')
 @Controller('users')
@@ -27,6 +27,16 @@ export class UsersController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  // GET user by ID
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  @ApiOperation({ summary: 'Get user information' })
+  @ApiResponse({ status: 200, description: 'User received successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  getUserById(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getUserById(id);
   }
 
   // Update user
@@ -72,7 +82,6 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'User activated successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   activate(@Param('id', ParseIntPipe) id: number) {
-      return this.usersService.activateUser(id);
+    return this.usersService.activateUser(id);
   }
-
 }

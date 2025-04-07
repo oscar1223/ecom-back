@@ -139,6 +139,24 @@ import {
         throw new InternalServerErrorException(`Error activating user with ID ${id}`);
       }
     }
+
+    // Nuevo método para obtener datos de usuario por ID
+    async getUserById(id: number): Promise<Partial<User>> {
+      try {
+        const user = await this.prisma.user.findUnique({ where: { id } });
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+        // Retornamos un objeto sin la contraseña
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          throw error;
+        }
+        throw new InternalServerErrorException(`Error retrieving user with ID ${id}`);
+      }
+    }
   
     // Helper for hashing password
     async hashPassword(password: string): Promise<string> {
